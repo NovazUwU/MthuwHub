@@ -1,0 +1,82 @@
+spawn(function()
+    while task.wait() do
+       if AutoDailySpin then
+        game:GetService("ReplicatedStorage"):WaitForChild("spins_thing_remote"):InvokeServer()
+       end
+    end
+ end)
+
+local library = loadstring(game:GetObjects("rbxassetid://7657867786")[1].Source)()
+local Wait = library.subs.Wait
+
+local Window = library:CreateWindow({
+Name = "Mthuw Hub PREMIUM // Menu",
+Themeable = {
+Info = "Discord Server: https://discord.gg/YesH5f2ccN"
+}
+})
+
+local Main = Window:CreateTab({
+Name = "Main"
+})
+
+local Spin = Main:CreateSection({
+Name = "Auto Spin"
+})
+
+local ClanLabel = Spin:AddLabel({
+Name = "Clan: N/A"
+})
+
+local function updateLabel()
+    local localplayer = game:GetService("Players").LocalPlayer
+    local ClanValue = game:GetService("ReplicatedStorage").Player_Data[localplayer.Name].Clan.Value
+ClanLabel:SetText("Clan: " .. ClanValue)
+end
+game:GetService("RunService").Heartbeat:Connect(updateLabel)
+
+Spin:AddToggle({
+Name = "Auto Daily Spins",
+Default = false,
+Callback = function(value)
+         AutoDailySpin = value
+end
+})
+
+Spin:AddButton({
+Name = "Auto Spin [Mythic/Supreme]",
+Default = false,
+Callback = function()
+    local clan = game:GetService("ReplicatedStorage").Player_Data[game.Players.LocalPlayer.Name].Clan
+    local wanted = {"Kamado","Agatsuma","Rengoku","Uzui","Soyama","Tokito","Tomioka","Hashibira"}
+    
+    repeat wait(0.001)
+        game:GetService("ReplicatedStorage").Remotes.To_Server.Handle_Initiate_S_:InvokeServer("check_can_spin", game:GetService("ReplicatedStorage").Player_Data[game.Players.LocalPlayer.Name].Spins, clan)
+    until table.find(wanted, clan.Value)
+end 
+})
+
+Spin:AddButton({
+Name = "Auto Spin [Supreme]",
+Default = false,
+Callback = function()
+    local clan = game:GetService("ReplicatedStorage").Player_Data[game.Players.LocalPlayer.Name].Clan
+    local wanted = {"Kamado","Agatsuma","Rengoku","Uzui"}
+    
+    repeat wait(0.001)
+        game:GetService("ReplicatedStorage").Remotes.To_Server.Handle_Initiate_S_:InvokeServer("check_can_spin", game:GetService("ReplicatedStorage").Player_Data[game.Players.LocalPlayer.Name].Spins, clan)
+    until table.find(wanted, clan.Value)
+end
+})
+
+local function sendCode(code, waitTime)
+    game:GetService("ReplicatedStorage").Remotes.send_code_to_server:FireServer(code)
+    wait(waitTime)
+end
+
+Spin:AddButton({
+Name = "Redeem Codes",
+Callback = function()
+    sendCode("ThxFor400MVisits", 12)
+end
+})
